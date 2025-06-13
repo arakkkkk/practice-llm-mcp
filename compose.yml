@@ -1,0 +1,26 @@
+services:
+  ollama:
+    build:
+      dockerfile: ollama/Dockerfile
+    container_name: ollama
+    ports:
+      - "11434:11434"  # Ollama の API ポート
+    volumes:
+      - ./ollama/data:/root/.ollama  # モデルの永続化
+    restart: unless-stopped
+    environment:
+      - OLLAMA_MODELS=qwen:latest  # 起動時に qwen モデルを準備
+    entrypoint: ["/bin/bash", "-c", "/usr/bin/ollama serve & /ollama-init.sh && wait"]
+
+  open-webui:
+      image: ghcr.io/open-webui/open-webui:main
+      container_name: open-webui
+      depends_on:
+        - ollama
+      ports:
+        - "80:8080"  # Web UI にアクセスするポート
+      environment:
+        - OLLAMA_BASE_URL=http://ollama:11434
+      volumes:
+        - ./webui/data:/app/backend/data
+      restart: unless-stopped
