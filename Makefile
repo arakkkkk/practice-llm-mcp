@@ -1,8 +1,11 @@
 run:
-	docker compose up -d
+	sudo docker compose up -d
 
 down:
-	docker compose down
+	sudo docker compose down
 
 logs:
-	docker compose logs -f
+	sudo docker compose logs -f
+
+restart::
+	sudo docker compose down && sudo docker compose up -d --build

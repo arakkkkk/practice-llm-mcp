@@ -11,16 +11,23 @@ services:
     environment:
       - OLLAMA_MODELS=qwen:latest  # 起動時に qwen モデルを準備
     entrypoint: ["/bin/bash", "-c", "/usr/bin/ollama serve & /ollama-init.sh && wait"]
+    networks:
+      web:
 
   open-webui:
-      image: ghcr.io/open-webui/open-webui:main
-      container_name: open-webui
-      depends_on:
-        - ollama
-      ports:
-        - "80:8080"  # Web UI にアクセスするポート
-      environment:
-        - OLLAMA_BASE_URL=http://ollama:11434
-      volumes:
-        - ./webui/data:/app/backend/data
-      restart: unless-stopped
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    depends_on:
+      - ollama
+    ports:
+      - "8080:8080"  # Web UI にアクセスするポート
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    volumes:
+      - ./webui/data:/app/backend/data
+    restart: unless-stopped
+    networks:
+      web:
+
+networks:
+  web:
